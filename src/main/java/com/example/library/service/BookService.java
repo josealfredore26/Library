@@ -43,7 +43,7 @@ public class BookService {
             if (optionalBook.isPresent()) {
                 Book auxBook = optionalBook.get();
                 if (!Objects.equals(book.getId(), id)) {
-                    throw new BookAlreadyExistsException("Book already exists with same isbn");
+                    throw new BookAlreadyExistsException("Book already exists with the same isbn");
                 }
             }
 

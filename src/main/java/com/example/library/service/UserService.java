@@ -42,9 +42,12 @@ public class UserService {
             if (userOptional.isPresent()) {
                 User auxUser = userOptional.get();
                 if (!Objects.equals(auxUser.getId(), id)) {
-                    throw new UserAlreadyExistsException("User already exists with same email");
+                    throw new UserAlreadyExistsException("User already exists with the same email");
                 }
             }
+            user.setName(name);
+            user.setEmail(email);
+            return userRepository.save(user);
         }
         return null;
     }
