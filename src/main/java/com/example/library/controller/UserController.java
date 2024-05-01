@@ -42,9 +42,9 @@ public class UserController {
             User newUser = userService.save(user.getName(), user.getEmail());
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
         } catch (InvalidDataException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (UserAlreadyExistsException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
@@ -56,9 +56,9 @@ public class UserController {
         } catch(UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidDataException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (UserAlreadyExistsException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
@@ -68,7 +68,7 @@ public class UserController {
             userService.delete(id);
             return new ResponseEntity<>(new MessageResponse("User successfully deleted."), HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

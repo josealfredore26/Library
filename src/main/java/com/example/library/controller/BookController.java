@@ -32,7 +32,7 @@ public class BookController {
             Book book = bookService.findById(id);
             return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (BookNotFoundException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -42,9 +42,9 @@ public class BookController {
             Book newBook = bookService.save(book.getIsbn(), book.getTitle(), book.getAuthor(), book.getQuantity());
             return new ResponseEntity<>(newBook, HttpStatus.CREATED);
         } catch (InvalidDataException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (BookAlreadyExistsException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
@@ -54,11 +54,11 @@ public class BookController {
             Book updatedBook = bookService.update(id, book.getIsbn(), book.getTitle(), book.getAuthor(), book.getQuantity());
             return new ResponseEntity<>(updatedBook, HttpStatus.OK);
         } catch (BookNotFoundException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidDataException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (BookAlreadyExistsException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
@@ -68,7 +68,7 @@ public class BookController {
             bookService.delete(id);
             return new ResponseEntity<>(new MessageResponse("Book succesfully deleted."), HttpStatus.OK);
         } catch (BookNotFoundException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

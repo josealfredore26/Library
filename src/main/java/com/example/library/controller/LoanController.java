@@ -40,7 +40,7 @@ public class LoanController {
             Loan newLoan = loanService.save(loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
             return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
         } catch (UserNotFoundException | BookNotFoundException | NoBookAvailableException | InconsistentDatesException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -50,7 +50,7 @@ public class LoanController {
             Loan updatedLoan = loanService.update(id, loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
             return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
         } catch (LoanNotFoundException | UserNotFoundException | BookNotFoundException | InconsistentDatesException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -61,7 +61,7 @@ public class LoanController {
             loanService.delete(id);
             return new ResponseEntity<>(new MessageResponse("Loan successfully deleted"), HttpStatus.OK);
         } catch (LoanNotFoundException e) {
-            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
