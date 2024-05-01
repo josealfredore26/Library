@@ -1,6 +1,8 @@
 package com.example.library.controller;
 
+import com.example.library.exception.*;
 import com.example.library.model.Loan;
+import com.example.library.model.MessageResponse;
 import com.example.library.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,42 +25,43 @@ public class LoanController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Loan> getLoanById(@PathVariable Long id) {
-        Loan loan = loanService.findById(id);
-        if (loan != null) {
+    public ResponseEntity<?> getLoanById(@PathVariable Long id) {
+        try {
+            Loan loan = loanService.findById(id);
             return new ResponseEntity<>(loan, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (LoanNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Loan> createLoan(@RequestBody Loan loan) {
-        Loan newLoan = loanService.save(loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
-        if (newLoan != null) {
+    public ResponseEntity<?> createLoan(@RequestBody Loan loan) {
+        try {
+            Loan newLoan = loanService.save(loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
             return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (UserNotFoundException | BookNotFoundException | NoBookAvailableException | InconsistentDatesException e) {
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Loan> updateLoan(@PathVariable Long id, @RequestBody Loan loan) {
-        Loan updatedLoan = loanService.update(id, loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
-        if (updatedLoan != null) {
+    public ResponseEntity<?> updateLoan(@PathVariable Long id, @RequestBody Loan loan) {
+        try {
+            Loan updatedLoan = loanService.update(id, loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
             return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (LoanNotFoundException | UserNotFoundException | BookNotFoundException | InconsistentDatesException e) {
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLoan(@PathVariable Long id) {
-        boolean deleted = loanService.delete(id);
-        if (deleted) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> deleteLoan(@PathVariable Long id) {
+        try {
+            loanService.delete(id);
+            return new ResponseEntity<>(new MessageResponse("Loan successfully deleted"), HttpStatus.OK);
+        } catch (LoanNotFoundException e) {
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 }

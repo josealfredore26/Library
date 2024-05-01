@@ -2,6 +2,7 @@ package com.example.library.service;
 
 import com.example.library.exception.InvalidDataException;
 import com.example.library.exception.UserAlreadyExistsException;
+import com.example.library.exception.UserNotFoundException;
 import com.example.library.model.User;
 import com.example.library.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class UserService {
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public User save(String name, String email) {
@@ -48,17 +49,18 @@ public class UserService {
             user.setName(name);
             user.setEmail(email);
             return userRepository.save(user);
+        } else {
+            throw new UserNotFoundException("User not found");
         }
-        return null;
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
             userRepository.delete(user);
-            return true;
+        } else {
+            throw new UserNotFoundException("User not found");
         }
-        return false;
     }
 
     public void validateData(String name, String email) {

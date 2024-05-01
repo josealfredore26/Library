@@ -1,6 +1,7 @@
 package com.example.library.service;
 
 import com.example.library.exception.BookAlreadyExistsException;
+import com.example.library.exception.BookNotFoundException;
 import com.example.library.exception.InvalidDataException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
@@ -22,7 +23,7 @@ public class BookService {
     }
 
     public Book findById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found."));
     }
 
     public Book save(String isbn, String title, String author, int quantity) {
@@ -53,17 +54,18 @@ public class BookService {
             book.setQuantity(quantity);
 
             return bookRepository.save(book);
+        } else {
+            throw new BookNotFoundException("Book not found.");
         }
-        return null;
     }
 
-    public boolean delete(Long id) {
+    public void delete (Long id) {
         Book book = bookRepository.findById(id).orElse(null);
         if (book != null) {
             bookRepository.delete(book);
-            return true;
+        } else {
+            throw new BookNotFoundException("Book not found.");
         }
-        return false;
     }
 
     private void verifyData(String isbn, String title, String author, int quantity) {

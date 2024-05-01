@@ -2,6 +2,7 @@ package com.example.library.controller;
 
 import com.example.library.exception.InvalidDataException;
 import com.example.library.exception.UserAlreadyExistsException;
+import com.example.library.exception.UserNotFoundException;
 import com.example.library.model.MessageResponse;
 import com.example.library.model.User;
 import com.example.library.service.UserService;
@@ -27,11 +28,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
-        User user = userService.findById(id);
-        if (user != null) {
+        try {
+            User user = userService.findById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new MessageResponse("User does not found."),HttpStatus.NOT_FOUND);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -51,11 +52,9 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
             User updatedUser = userService.update(id, user.getName(), user.getEmail());
-            if (updatedUser != null) {
-                return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new MessageResponse("User does not found."), HttpStatus.NOT_FOUND);
-            }
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch(UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidDataException e) {
             return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (UserAlreadyExistsException e) {
@@ -65,11 +64,11 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        boolean success = userService.delete(id);
-        if (success) {
+        try {
+            userService.delete(id);
             return new ResponseEntity<>(new MessageResponse("User successfully deleted."), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new MessageResponse("User does not found."), HttpStatus.NOT_FOUND);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 
