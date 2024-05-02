@@ -10,7 +10,7 @@ import com.example.library.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -33,13 +33,13 @@ public class LoanService {
         return loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException("Loan not found"));
     }
 
-    public Loan save(Long userId, Long bookId, Date startDate, Date endDate) {
+    public Loan save(Long userId, Long bookId, LocalDate startDate, LocalDate endDate) {
         User user = userRepository.findById(userId).orElse(null);
         if(user != null) {
             Book book = bookRepository.findById(bookId).orElse(null);
             if(book != null) {
                 if (book.getQuantity() >=1) {
-                    if(startDate.before(endDate)) {
+                    if(startDate.isBefore(endDate)) {
                         return loanRepository.save(new Loan(user, book, startDate, endDate));
                     } else {
                         throw new InconsistentDatesException("Start date must be before end date");
@@ -55,14 +55,14 @@ public class LoanService {
         }
     }
 
-    public Loan update(Long id, Long userId, Long bookId, Date startDate, Date endDate) {
+    public Loan update(Long id, Long userId, Long bookId, LocalDate startDate, LocalDate endDate) {
         Loan loan = loanRepository.findById(id).orElse(null);
         if(loan != null) {
             User user = userRepository.findById(userId).orElse(null);
             if(user != null) {
                 Book book = bookRepository.findById(bookId).orElse(null);
                 if(book != null) {
-                    if(startDate.before(endDate)) {
+                    if(startDate.isBefore(endDate)) {
                         loan.setUser(user);
                         loan.setBook(book);
                         loan.setStartDate(startDate);

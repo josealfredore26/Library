@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -25,12 +27,12 @@ public class Loan {
     private Book book;
 
 
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private boolean finalized;
 
-    public Loan(User user, Book book, Date startDate, Date endDate) {
+    public Loan(User user, Book book, LocalDate startDate, LocalDate endDate) {
         this.user = user;
         this.book = book;
         this.startDate = startDate;
