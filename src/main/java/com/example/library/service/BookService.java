@@ -12,22 +12,49 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * The BookService class provides business logic for managing Book entities.
+ * It handles operations such as finding, saving, updating, and deleting books.
+ */
 @Service
 public class BookService {
 
     @Autowired
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
+    /**
+     * Retrieves all books from the database.
+     *
+     * @return a list of all books
+     */
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
+    /**
+     * Finds a book by its ID.
+     *
+     * @param id the ID of the book to find
+     * @return the book if found
+     * @throws BookNotFoundException if the book is not found
+     */
     public Book findById(Long id) {
         return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found."));
     }
 
+    /**
+     * Saves a new book to the database.
+     *
+     * @param isbn     the ISBN of the book
+     * @param title    the title of the book
+     * @param author   the author of the book
+     * @param quantity the quantity of the book
+     * @return the saved book
+     * @throws InvalidDataException      if the provided data is invalid
+     * @throws BookAlreadyExistsException if a book with the same ISBN already exists
+     */
     public Book save(String isbn, String title, String author, int quantity) {
-        verifyData(isbn, title, author, quantity);
+        validateData(isbn, title, author, quantity);
         Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
         if (optionalBook.isPresent()) {
             throw new BookAlreadyExistsException("Book already exists");
@@ -36,15 +63,28 @@ public class BookService {
         return bookRepository.save(new Book(isbn, title, author, quantity));
     }
 
+    /**
+     * Updates an existing book in the database.
+     *
+     * @param id       the ID of the book to update
+     * @param isbn     the new ISBN of the book
+     * @param title    the new title of the book
+     * @param author   the new author of the book
+     * @param quantity the new quantity of the book
+     * @return the updated book
+     * @throws BookNotFoundException     if the book to update is not found
+     * @throws InvalidDataException      if the provided data is invalid
+     * @throws BookAlreadyExistsException if a book with the same ISBN already exists
+     */
     public Book update(Long id, String isbn, String title, String author, int quantity) {
         Book book = findById(id);
         if (book != null) {
-            verifyData(isbn, title, author, quantity);
+            validateData(isbn, title, author, quantity);
             Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
             if (optionalBook.isPresent()) {
                 Book auxBook = optionalBook.get();
                 if (!Objects.equals(book.getId(), id)) {
-                    throw new BookAlreadyExistsException("Book already exists with the same isbn");
+                    throw new BookAlreadyExistsException("Book already exists with the same ISBN");
                 }
             }
 
@@ -59,7 +99,13 @@ public class BookService {
         }
     }
 
-    public void delete (Long id) {
+    /**
+     * Deletes a book from the database.
+     *
+     * @param id the ID of the book to delete
+     * @throws BookNotFoundException if the book to delete is not found
+     */
+    public void delete(Long id) {
         Book book = bookRepository.findById(id).orElse(null);
         if (book != null) {
             bookRepository.delete(book);
@@ -68,7 +114,16 @@ public class BookService {
         }
     }
 
-    private void verifyData(String isbn, String title, String author, int quantity) {
+    /**
+     * Verifies the validity of book data.
+     *
+     * @param isbn     the ISBN of the book
+     * @param title    the title of the book
+     * @param author   the author of the book
+     * @param quantity the quantity of the book
+     * @throws InvalidDataException if the provided data is invalid
+     */
+    private void validateData(String isbn, String title, String author, int quantity) {
         if (isbn == null || isbn.isBlank() || isbn.isEmpty()) {
             throw new InvalidDataException("ISBN cannot be null, blank or empty");
         }
@@ -84,3 +139,4 @@ public class BookService {
     }
 
 }
+

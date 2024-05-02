@@ -12,15 +12,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * The LoanServiceTest class contains unit tests for the LoanService class.
+ */
 public class LoanServiceTest {
 
     @Mock
@@ -53,6 +55,7 @@ public class LoanServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         Loan result = loanService.save(1L, 1L, startDate, endDate);
@@ -101,8 +104,13 @@ public class LoanServiceTest {
     @Test
     public void testSave_InconsistentDates() {
         // Arrange
-        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(new Book()));
+        User user = new User();
+        user.setId(1L);
+        Book book = new Book();
+        book.setId(1L);
+        book.setQuantity(1);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         // Act and Assert
         assertThrows(InconsistentDatesException.class, () -> loanService.save(1L, 1L, LocalDate.of(2020, 7, 1), LocalDate.of(2020, 1, 4)));
@@ -124,11 +132,10 @@ public class LoanServiceTest {
         when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         Loan result = loanService.update(1L, 1L, 1L, startDate, endDate);
-
-        System.out.println(result);
 
         // Assert
         assertNotNull(result);

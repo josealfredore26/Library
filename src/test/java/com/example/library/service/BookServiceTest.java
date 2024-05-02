@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * The BookServiceTest class contains unit tests for the Book1Service class.
+ */
 class BookServiceTest {
 
     @Mock
