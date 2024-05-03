@@ -6,6 +6,11 @@ import com.example.library.exception.UserNotFoundException;
 import com.example.library.model.MessageResponse;
 import com.example.library.model.User;
 import com.example.library.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 /**
  * The UserController class handles HTTP requests related to users.
  */
 @RestController
 @RequestMapping("/api/users")
-@Api(tags = "User Management")
 public class UserController {
 
     @Autowired
@@ -35,7 +34,7 @@ public class UserController {
      * @return ResponseEntity containing the list of users and HttpStatus OK if successful
      */
     @GetMapping
-    @ApiOperation(value = "Get all users")
+    @Operation(summary = "Get all users", description = "Retrieves a list of all users")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
@@ -49,12 +48,12 @@ public class UserController {
      *         or HttpStatus NOT_FOUND if the user does not exist
      */
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get user by ID")
+    @Operation(summary = "Get user by ID", description = "Retrieves a user by their ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved user"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(@Parameter(description = "ID of the user") @PathVariable Long id) {
         try {
             User user = userService.findById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
@@ -72,11 +71,11 @@ public class UserController {
      *         or HttpStatus CONFLICT if the user already exists
      */
     @PostMapping
-    @ApiOperation(value = "Create a new user")
+    @Operation(summary = "Create a new user", description = "Creates a new user")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "User created successfully"),
-            @ApiResponse(code = 400, message = "Invalid request"),
-            @ApiResponse(code = 409, message = "User already exists")
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
     })
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
@@ -100,14 +99,14 @@ public class UserController {
      *         or HttpStatus CONFLICT if the updated user conflicts with an existing user
      */
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update an existing user")
+    @Operation(summary = "Update an existing user", description = "Updates an existing user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User updated successfully"),
-            @ApiResponse(code = 400, message = "Invalid request"),
-            @ApiResponse(code = 404, message = "User not found"),
-            @ApiResponse(code = 409, message = "User already exists with provided email")
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "409", description = "User already exists with provided email")
     })
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@Parameter(description = "ID of the user") @PathVariable Long id, @RequestBody User user) {
         try {
             User updatedUser = userService.update(id, user.getName(), user.getEmail());
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
@@ -128,12 +127,12 @@ public class UserController {
      *         or HttpStatus NOT_FOUND if the user does not exist
      */
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a user by ID")
+    @Operation(summary = "Delete a user by ID", description = "Deletes a user by their ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User deleted successfully"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@Parameter(description = "ID of the user") @PathVariable Long id) {
         try {
             userService.delete(id);
             return new ResponseEntity<>(new MessageResponse("User successfully deleted."), HttpStatus.OK);

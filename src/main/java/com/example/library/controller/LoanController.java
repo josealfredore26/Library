@@ -4,6 +4,10 @@ import com.example.library.exception.*;
 import com.example.library.model.Loan;
 import com.example.library.model.MessageResponse;
 import com.example.library.service.LoanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 /**
  * The LoanController class handles HTTP requests related to loans.
  */
 @RestController
 @RequestMapping("/api/loans")
-@Api(tags = "Loan Management")
 public class LoanController {
 
     @Autowired
@@ -33,7 +31,7 @@ public class LoanController {
      * @return ResponseEntity containing the list of loans and HttpStatus OK if successful
      */
     @GetMapping
-    @ApiOperation(value = "Get all loans")
+    @Operation(summary = "Get all loans", description = "Retrieves a list of all loans")
     public ResponseEntity<List<Loan>> getAllLoans() {
         List<Loan> loans = loanService.findAll();
         return new ResponseEntity<>(loans, HttpStatus.OK);
@@ -47,12 +45,12 @@ public class LoanController {
      *         or HttpStatus NOT_FOUND if the loan does not exist
      */
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get loan by ID")
+    @Operation(summary = "Get loan by ID", description = "Retrieves a loan by its ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved loan"),
-            @ApiResponse(code = 404, message = "Loan not found")
+            @ApiResponse(responseCode = "200", description = "Loan found"),
+            @ApiResponse(responseCode = "404", description = "Loan not found")
     })
-    public ResponseEntity<?> getLoanById(@PathVariable Long id) {
+    public ResponseEntity<?> getLoanById(@Parameter(description = "ID of the loan") @PathVariable Long id) {
         try {
             Loan loan = loanService.findById(id);
             return new ResponseEntity<>(loan, HttpStatus.OK);
@@ -69,10 +67,10 @@ public class LoanController {
      *         or HttpStatus BAD_REQUEST if the request is invalid
      */
     @PostMapping
-    @ApiOperation(value = "Create a new loan")
+    @Operation(summary = "Create a new loan", description = "Creates a new loan")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Loan created successfully"),
-            @ApiResponse(code = 400, message = "Invalid request")
+            @ApiResponse(responseCode = "201", description = "Loan created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     public ResponseEntity<?> createLoan(@RequestBody Loan loan) {
         try {
@@ -92,12 +90,12 @@ public class LoanController {
      *         or HttpStatus BAD_REQUEST if the request is invalid
      */
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update an existing loan")
+    @Operation(summary = "Update an existing loan", description = "Updates an existing loan")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Loan updated successfully"),
-            @ApiResponse(code = 400, message = "Invalid request")
+            @ApiResponse(responseCode = "200", description = "Loan updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
     })
-    public ResponseEntity<?> updateLoan(@PathVariable Long id, @RequestBody Loan loan) {
+    public ResponseEntity<?> updateLoan(@Parameter(description = "ID of the loan") @PathVariable Long id, @RequestBody Loan loan) {
         try {
             Loan updatedLoan = loanService.update(id, loan.getUser().getId(), loan.getBook().getId(), loan.getStartDate(), loan.getEndDate());
             return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
@@ -114,12 +112,12 @@ public class LoanController {
      *         or HttpStatus NOT_FOUND if the loan does not exist
      */
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a loan by ID")
+    @Operation(summary = "Delete a loan by ID", description = "Deletes a loan by its ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Loan deleted successfully"),
-            @ApiResponse(code = 404, message = "Loan not found")
+            @ApiResponse(responseCode = "200", description = "Loan deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Loan not found")
     })
-    public ResponseEntity<?> deleteLoan(@PathVariable Long id) {
+    public ResponseEntity<?> deleteLoan(@Parameter(description = "ID of the loan") @PathVariable Long id) {
         try {
             loanService.delete(id);
             return new ResponseEntity<>(new MessageResponse("Loan successfully deleted"), HttpStatus.OK);

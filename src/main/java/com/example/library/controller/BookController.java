@@ -4,6 +4,10 @@ import com.example.library.exception.*;
 import com.example.library.model.Book;
 import com.example.library.model.MessageResponse;
 import com.example.library.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 /**
  * The BookController class handles HTTP requests related to books.
  */
 @RestController
 @RequestMapping("/api/books")
-@Api(tags = "Book Management")
 public class BookController {
 
     @Autowired
@@ -33,7 +31,7 @@ public class BookController {
      * @return ResponseEntity containing the list of books and HttpStatus OK if successful
      */
     @GetMapping
-    @ApiOperation(value = "Get all books")
+    @Operation(summary = "Get all books", description = "Retrieves a list of all books")
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> books = bookService.findAll();
         return new ResponseEntity<>(books, HttpStatus.OK);
@@ -47,12 +45,12 @@ public class BookController {
      *         or HttpStatus NOT_FOUND if the book does not exist
      */
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get book by ID")
+    @Operation(summary = "Get book by ID", description = "Retrieves a book by its ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved book"),
-            @ApiResponse(code = 404, message = "Book not found")
+            @ApiResponse(responseCode = "200", description = "Book found"),
+            @ApiResponse(responseCode = "404", description = "Book not found")
     })
-    public ResponseEntity<?> getBookById(@PathVariable Long id) {
+    public ResponseEntity<?> getBookById(@Parameter(description = "ID of the book") @PathVariable Long id) {
         try {
             Book book = bookService.findById(id);
             return new ResponseEntity<>(book, HttpStatus.OK);
@@ -69,10 +67,11 @@ public class BookController {
      *         or HttpStatus BAD_REQUEST if the request is invalid
      */
     @PostMapping
-    @ApiOperation(value = "Create a new book")
+    @Operation(summary = "Create a new book", description = "Creates a new book")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Book created successfully"),
-            @ApiResponse(code = 400, message = "Invalid request")
+            @ApiResponse(responseCode = "201", description = "Book created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "409", description = "Book already exists")
     })
     public ResponseEntity<?> createBook(@RequestBody Book book) {
         try {
@@ -94,12 +93,14 @@ public class BookController {
      *         or HttpStatus BAD_REQUEST if the request is invalid
      */
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update an existing book")
+    @Operation(summary = "Update an existing book", description = "Updates an existing book")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Book updated successfully"),
-            @ApiResponse(code = 400, message = "Invalid request")
+            @ApiResponse(responseCode = "200", description = "Book updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Book not found"),
+            @ApiResponse(responseCode = "409", description = "Book already exists with provided ISBN")
     })
-    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<?> updateBook(@Parameter(description = "ID of the book") @PathVariable Long id, @RequestBody Book book) {
         try {
             Book updatedBook = bookService.update(id, book.getIsbn(), book.getTitle(), book.getAuthor(), book.getQuantity());
             return new ResponseEntity<>(updatedBook, HttpStatus.OK);
@@ -120,12 +121,12 @@ public class BookController {
      *         or HttpStatus NOT_FOUND if the book does not exist
      */
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a book by ID")
+    @Operation(summary = "Delete a book by ID", description = "Deletes a book by its ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Book deleted successfully"),
-            @ApiResponse(code = 404, message = "Book not found")
+            @ApiResponse(responseCode = "200", description = "Book deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Book not found")
     })
-    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBook(@Parameter(description = "ID of the book") @PathVariable Long id) {
         try {
             bookService.delete(id);
             return new ResponseEntity<>(new MessageResponse("Book successfully deleted"), HttpStatus.OK);
