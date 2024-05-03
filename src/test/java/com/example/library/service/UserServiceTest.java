@@ -48,8 +48,8 @@ public class UserServiceTest {
         // Assert
         assertFalse(users.isEmpty());
         assertEquals(1, users.size());
-        assertEquals("John", users.getFirst().getName());
-        assertEquals("john@example.com", users.getFirst().getEmail());
+        assertEquals("John", users.get(0).getName());
+        assertEquals("john@example.com", users.get(0).getEmail());
     }
 
     @Test
