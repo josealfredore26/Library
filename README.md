@@ -52,4 +52,4 @@ The application is configured to use the following settings:
 
 - Java version: 17
 - Spring Boot version: 3.2.5
-- Database: H2 (in-memory)
+- Database: H2
